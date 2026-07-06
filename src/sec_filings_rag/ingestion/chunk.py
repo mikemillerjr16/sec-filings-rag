@@ -12,8 +12,8 @@ from typing import Any
 
 import tiktoken
 
-from enterprise_rag.ingestion.edgar import Filing
-from enterprise_rag.ingestion.parse import Section
+from sec_filings_rag.ingestion.edgar import Filing
+from sec_filings_rag.ingestion.parse import Section
 
 _ENCODING = "cl100k_base"  # used by text-embedding-3-* and gpt-4o-*
 

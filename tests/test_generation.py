@@ -1,8 +1,8 @@
 """Unit tests for prompt/context formatting (pure, offline). The live chain is exercised manually
 and by the eval harness (Phase 4)."""
 
-from enterprise_rag.generation.prompts import format_context, source_citation
-from enterprise_rag.retrieval.store import SearchHit
+from sec_filings_rag.generation.prompts import format_context, source_citation
+from sec_filings_rag.retrieval.store import SearchHit
 
 HIT = SearchHit(
     chunk_id="NVDA-2026-Item1A-3",

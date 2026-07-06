@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     pgvector_dsn: str = "postgresql://rag:rag@localhost:5432/rag"
 
     # --- SEC EDGAR ---
-    sec_user_agent: str = "enterprise-rag-portfolio contact@example.com"
+    sec_user_agent: str = "sec-filings-rag-portfolio contact@example.com"
 
     # --- Track 1 endpoint auth ---
     api_shared_secret: str = ""

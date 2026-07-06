@@ -20,14 +20,14 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from enterprise_rag.config import get_settings
-from enterprise_rag.generation.chain import get_pipeline
-from enterprise_rag.retrieval.retriever import DEFAULT_K
+from sec_filings_rag.config import get_settings
+from sec_filings_rag.generation.chain import get_pipeline
+from sec_filings_rag.retrieval.retriever import DEFAULT_K
 
 _TICKER_RE = re.compile(r"^[A-Za-z.]{1,6}$")
 
 app = FastAPI(
-    title="Enterprise RAG API",
+    title="SEC Filings RAG API",
     description="Ask questions about SEC 10-K filings; get grounded, cited answers.",
     version="0.1.0",
 )

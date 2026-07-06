@@ -16,16 +16,16 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
 
-from enterprise_rag.config import Settings, get_settings
-from enterprise_rag.generation.prompts import (
+from sec_filings_rag.config import Settings, get_settings
+from sec_filings_rag.generation.prompts import (
     SYSTEM_PROMPT,
     USER_TEMPLATE,
     format_context,
     source_citation,
 )
-from enterprise_rag.observability.tracing import flush, get_handler, get_langfuse
-from enterprise_rag.retrieval.retriever import DEFAULT_K, Retriever
-from enterprise_rag.retrieval.store import SearchHit
+from sec_filings_rag.observability.tracing import flush, get_handler, get_langfuse
+from sec_filings_rag.retrieval.retriever import DEFAULT_K, Retriever
+from sec_filings_rag.retrieval.store import SearchHit
 
 
 @dataclass

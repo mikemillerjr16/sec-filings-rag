@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from enterprise_rag.api.app import app
+from sec_filings_rag.api.app import app
 
 client = TestClient(app)
 

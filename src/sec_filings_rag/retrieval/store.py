@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
-from enterprise_rag.config import Settings, StoreBackend, get_settings
+from sec_filings_rag.config import Settings, StoreBackend, get_settings
 
 TABLE_NAME = "filings"
 VECTOR_COLUMN = "vector"

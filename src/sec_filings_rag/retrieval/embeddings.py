@@ -11,7 +11,7 @@ from functools import lru_cache
 
 from langchain_openai import OpenAIEmbeddings
 
-from enterprise_rag.config import get_settings
+from sec_filings_rag.config import get_settings
 
 EMBED_DIM = 1536  # text-embedding-3-small
 

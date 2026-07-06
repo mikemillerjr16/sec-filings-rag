@@ -7,9 +7,9 @@ never change. Optional metadata filtering (e.g. a single ticker) powers cross-fi
 
 from __future__ import annotations
 
-from enterprise_rag.config import Settings, get_settings
-from enterprise_rag.retrieval.embeddings import embed_query
-from enterprise_rag.retrieval.store import SearchHit, get_store
+from sec_filings_rag.config import Settings, get_settings
+from sec_filings_rag.retrieval.embeddings import embed_query
+from sec_filings_rag.retrieval.store import SearchHit, get_store
 
 DEFAULT_K = 8
 
