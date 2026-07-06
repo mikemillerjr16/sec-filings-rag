@@ -7,7 +7,7 @@ back to specific filing sections.
 
 from __future__ import annotations
 
-from enterprise_rag.retrieval.store import SearchHit
+from sec_filings_rag.retrieval.store import SearchHit
 
 SYSTEM_PROMPT = """You are a precise financial-analysis assistant answering questions about \
 companies' SEC 10-K filings.

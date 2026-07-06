@@ -13,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from enterprise_rag.config import get_settings
+from sec_filings_rag.config import get_settings
 
 _TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 _SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik10}.json"

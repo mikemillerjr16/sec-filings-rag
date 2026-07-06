@@ -1,4 +1,4 @@
-# Enterprise RAG over SEC 10-K Filings
+# SEC Filings RAG
 
 > Ask natural-language questions about public companies' annual reports and get grounded, **cited**
 > answers — built as a production-shaped, **observable**, and deliberately **cost-optimized** RAG
@@ -89,8 +89,8 @@ with the LLM-judge caveat stated plainly._
 Built in phases with a clean, reviewable git history (branch + PR per phase):
 
 - [x] **Phase 0** — Foundations & scaffolding
-- [ ] **Phase 1** — Ingestion pipeline (the retrieval-quality battle)
-- [ ] **Phase 2** — Baseline RAG + API + UI + Langfuse
+- [x] **Phase 1** — Ingestion pipeline (the retrieval-quality battle)
+- [x] **Phase 2** — Baseline RAG + API + UI + Langfuse
 - [ ] **Phase 3** — Advanced retrieval (hybrid + rerank)
 - [ ] **Phase 4** — Adversarial evaluation (RAGAS)
 - [ ] **Phase 5** — Track 1 serverless deploy

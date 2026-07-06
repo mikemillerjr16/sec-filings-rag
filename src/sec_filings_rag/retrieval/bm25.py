@@ -14,7 +14,7 @@ from typing import Any
 
 import bm25s
 
-from enterprise_rag.retrieval.store import SearchHit
+from sec_filings_rag.retrieval.store import SearchHit
 
 _STOPWORDS = "en"
 

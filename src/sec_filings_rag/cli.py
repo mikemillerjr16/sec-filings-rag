@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import argparse
 
-from enterprise_rag import __version__
-from enterprise_rag.config import get_settings
+from sec_filings_rag import __version__
+from sec_filings_rag.config import get_settings
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="enterprise-rag", description=__doc__)
-    parser.add_argument("--version", action="version", version=f"enterprise-rag {__version__}")
+    parser = argparse.ArgumentParser(prog="sec-filings-rag", description=__doc__)
+    parser.add_argument("--version", action="version", version=f"sec-filings-rag {__version__}")
     parser.add_argument(
         "config",
         nargs="?",

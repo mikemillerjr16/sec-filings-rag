@@ -1,11 +1,11 @@
-"""`python -m enterprise_rag.ingestion [TICKER ...]` — build the indexes from SEC 10-Ks."""
+"""`python -m sec_filings_rag.ingestion [TICKER ...]` — build the indexes from SEC 10-Ks."""
 
 from __future__ import annotations
 
 import argparse
 import logging
 
-from enterprise_rag.ingestion.pipeline import DEFAULT_TICKERS, ingest
+from sec_filings_rag.ingestion.pipeline import DEFAULT_TICKERS, ingest
 
 
 def main() -> None:

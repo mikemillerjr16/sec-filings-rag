@@ -12,7 +12,7 @@ from functools import lru_cache
 from langfuse import Langfuse
 from langfuse.langchain import CallbackHandler
 
-from enterprise_rag.config import get_settings
+from sec_filings_rag.config import get_settings
 
 
 @lru_cache

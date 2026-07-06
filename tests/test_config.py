@@ -1,7 +1,7 @@
 """Smoke tests for configuration — proves the package imports and settings resolve."""
 
-from enterprise_rag import __version__
-from enterprise_rag.config import (
+from sec_filings_rag import __version__
+from sec_filings_rag.config import (
     PLACEHOLDER_SECRET,
     RerankBackend,
     Settings,

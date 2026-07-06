@@ -8,17 +8,17 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from enterprise_rag.config import get_settings
-from enterprise_rag.ingestion import edgar
-from enterprise_rag.ingestion.chunk import chunk_filing, chunk_to_record
-from enterprise_rag.ingestion.parse import parse_sections
-from enterprise_rag.retrieval.bm25 import BM25Index, bm25_dir_for
-from enterprise_rag.retrieval.embeddings import embed_texts
-from enterprise_rag.retrieval.store import get_store
+from sec_filings_rag.config import get_settings
+from sec_filings_rag.ingestion import edgar
+from sec_filings_rag.ingestion.chunk import chunk_filing, chunk_to_record
+from sec_filings_rag.ingestion.parse import parse_sections
+from sec_filings_rag.retrieval.bm25 import BM25Index, bm25_dir_for
+from sec_filings_rag.retrieval.embeddings import embed_texts
+from sec_filings_rag.retrieval.store import get_store
 
 DEFAULT_TICKERS = ["NVDA", "AMD", "MSFT"]
 
-log = logging.getLogger("enterprise_rag.ingest")
+log = logging.getLogger("sec_filings_rag.ingest")
 
 
 @dataclass

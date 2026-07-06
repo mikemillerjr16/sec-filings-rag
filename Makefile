@@ -18,7 +18,7 @@ install sync:  ## Create the venv (outside iCloud) and install all deps + dev gr
 	uv sync --all-groups
 
 config:  ## Print resolved (non-secret) configuration
-	uv run enterprise-rag config
+	uv run sec-filings-rag config
 
 lint:  ## Ruff lint
 	uv run ruff check .
@@ -36,16 +36,16 @@ check: lint typecheck test  ## Lint + typecheck + test (what CI runs)
 
 # --- Phase 1+ targets (wired up as each phase lands) ---
 ingest:  ## Fetch + parse + chunk + embed SEC 10-Ks into the vector store (Phase 1)
-	uv run python -m enterprise_rag.ingestion $(ARGS)
+	uv run python -m sec_filings_rag.ingestion $(ARGS)
 
 api:  ## Run the FastAPI app locally with reload (Phase 2)
-	uv run uvicorn enterprise_rag.api.app:app --reload --port 8000
+	uv run uvicorn sec_filings_rag.api.app:app --reload --port 8000
 
 ui:  ## Run the Streamlit chat UI (Phase 2)
 	uv run streamlit run ui/streamlit_app.py
 
 eval:  ## Run the adversarial RAGAS evaluation (Phase 4)
-	uv run python -m enterprise_rag.evaluation $(ARGS)
+	uv run python -m sec_filings_rag.evaluation $(ARGS)
 
 # --- Local infra (Postgres/pgvector + Langfuse) ---
 up:  ## Start local Postgres+pgvector and self-hosted Langfuse

@@ -3,9 +3,9 @@
 Keeps CI offline and fast; the real end-to-end fetch is exercised by `make ingest`.
 """
 
-from enterprise_rag.ingestion.chunk import chunk_filing
-from enterprise_rag.ingestion.edgar import Filing
-from enterprise_rag.ingestion.parse import parse_sections
+from sec_filings_rag.ingestion.chunk import chunk_filing
+from sec_filings_rag.ingestion.edgar import Filing
+from sec_filings_rag.ingestion.parse import parse_sections
 
 # Minimal filing that mimics the real structure: a hyperlinked TOC -> anchor ids, an iXBRL hidden
 # header we must strip, an inline ix:nonfraction number we must keep, and a financial table.

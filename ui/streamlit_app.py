@@ -1,4 +1,4 @@
-"""Streamlit chat UI for the Enterprise RAG API.
+"""Streamlit chat UI for the SEC Filings RAG API.
 
 Talks to the FastAPI backend over HTTP (locally, or the Lambda Function URL in the hosted demo),
 streaming tokens as they arrive and rendering inline source citations. The cold-start banner is
@@ -23,7 +23,7 @@ COMPANIES = {
     "Microsoft (MSFT)": "MSFT",
 }
 
-st.set_page_config(page_title="Enterprise RAG — SEC 10-K Q&A", page_icon="📊", layout="centered")
+st.set_page_config(page_title="SEC Filings RAG — 10-K Q&A", page_icon="📊", layout="centered")
 
 
 def _headers() -> dict[str, str]:
@@ -74,7 +74,7 @@ with st.sidebar:
     st.caption(f"API: `{API_URL}`")
 
 # --- Header + honest cold-start banner ---
-st.title("📊 Enterprise RAG over SEC 10-K Filings")
+st.title("📊 SEC Filings RAG")
 st.info(
     "⏳ **First request may take ~20–30s.** The demo UI and the API both scale to zero to run at "
     "~$0/month — so the first call pays a cold start. Subsequent questions are fast.",
