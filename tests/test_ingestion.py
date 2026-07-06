@@ -62,6 +62,30 @@ def test_parse_preserves_table_rows() -> None:
     assert "Net income | $ | 120,067" in fs.text
 
 
+# Microsoft-style filing: TOC link text is the SECTION NAME, and only the href fragment carries
+# the item number. Regression guard so this filer convention keeps parsing.
+MSFT_STYLE_HTML = """
+<html><body>
+  <div>
+    <a href="#item_1_business">Business</a>
+    <a href="#item_1a_risk_factors">Risk Factors</a>
+    <a href="#item5_market">Market for Registrant's Common Equity</a>
+  </div>
+  <div id="item_1_business"><p>We develop and license software and cloud services.</p></div>
+  <div id="item_1a_risk_factors"><p>Cybersecurity threats could disrupt our cloud operations.</p></div>
+  <div id="item5_market"><p>Our common stock is listed on the Nasdaq under MSFT.</p></div>
+</body></html>
+"""
+
+
+def test_parse_handles_href_encoded_items() -> None:
+    sections = parse_sections(MSFT_STYLE_HTML)
+    assert [s.item for s in sections] == ["Item 1", "Item 1A", "Item 5"]
+    # link text becomes the section title for this convention
+    assert sections[1].title == "Risk Factors"
+    assert "Cybersecurity threats" in sections[1].text
+
+
 def test_chunk_metadata_and_provenance() -> None:
     sections = parse_sections(FIXTURE_HTML)
     chunks = chunk_filing(FILING, sections, max_tokens=64, overlap_tokens=8)

@@ -34,7 +34,13 @@ _DROP_TAGS = {
     "head",
 }
 
+# Filers disagree on where the "Item N" marker lives. NVIDIA/AMD put it in the TOC *link text*
+# ("Item 1A."); Microsoft puts it only in the *href target id* (#item_1a_risk_factors) and uses the
+# section name as the link text. We detect the item from whichever carries it.
 _ITEM_RE = re.compile(r"^\s*item\s+(\d+[a-c]?)\b", re.IGNORECASE)
+# NB: can't use \b after the number — in "item_1a" the digit is followed by "_" (a word char), so
+# there's no boundary. A negative lookahead for a continuing letter/digit is what we want.
+_ITEM_HREF_RE = re.compile(r"^item[_\- ]?(\d+[a-c]?)(?![a-z0-9])", re.IGNORECASE)
 # horizontal whitespace incl. the non-breaking spaces 10-Ks love, but NOT newlines
 _WS_RE = re.compile(r"[^\S\n]+")
 
@@ -63,26 +69,35 @@ def _table_to_text(table: Tag) -> str:
     return "\n".join(lines)
 
 
-def _toc_targets(soup: BeautifulSoup) -> list[tuple[str, str]]:
-    """Ordered [(item_label, target_id)] from the hyperlinked table of contents.
+def _toc_targets(soup: BeautifulSoup) -> list[tuple[str, str, str]]:
+    """Ordered [(item_label, target_id, title_hint)] from the hyperlinked table of contents.
 
-    De-duplicates repeat links (TOC + running headers) keeping first occurrence per item.
+    Item identity comes from the link text ("Item 1A.") or, failing that, the href fragment
+    ("#item_1a_..."). De-duplicates repeat links (TOC + running headers), keeping first per item.
     """
     seen: set[str] = set()
-    targets: list[tuple[str, str]] = []
+    targets: list[tuple[str, str, str]] = []
     for a in soup.find_all("a", href=True):
         href = a.get("href")
         if not isinstance(href, str) or not href.startswith("#"):
             continue
-        m = _ITEM_RE.match(a.get_text(" ", strip=True))
+        target_id = href[1:]
+        link_text = a.get_text(" ", strip=True)
+
+        m = _ITEM_RE.match(link_text)
+        if m:
+            title_hint = ""  # link text is just "Item 1A." — derive a real title from the body
+        else:
+            m = _ITEM_HREF_RE.match(target_id)
+            title_hint = link_text  # e.g. Microsoft's "Risk Factors"
         if not m:
             continue
+
         item = f"Item {m.group(1).upper()}"
-        target_id = href[1:]
         if item in seen or not soup.find(id=target_id):
             continue
         seen.add(item)
-        targets.append((item, target_id))
+        targets.append((item, target_id, title_hint))
     return targets
 
 
@@ -124,9 +139,9 @@ def parse_sections(html: str) -> list[Section]:
     if not targets:
         return []
 
-    elements = [soup.find(id=tid) for _, tid in targets]
+    elements = [soup.find(id=tid) for _, tid, _ in targets]
     sections: list[Section] = []
-    for i, (item, _tid) in enumerate(targets):
+    for i, (item, _tid, title_hint) in enumerate(targets):
         start = elements[i]
         stop = elements[i + 1] if i + 1 < len(elements) else None
         if start is None:
@@ -134,5 +149,6 @@ def parse_sections(html: str) -> list[Section]:
         text = _text_between(start, stop)
         if len(text) < 40:  # skip empty/placeholder anchors
             continue
-        sections.append(Section(item=item, title=_title_for(item, text), text=text))
+        title = title_hint or _title_for(item, text)
+        sections.append(Section(item=item, title=title, text=text))
     return sections
