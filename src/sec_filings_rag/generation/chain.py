@@ -48,14 +48,14 @@ class RagPipeline:
             [("system", SYSTEM_PROMPT), ("human", USER_TEMPLATE)]
         )
 
-    def _retrieve(self, question: str, k: int, where: str | None) -> list[SearchHit]:
+    def _retrieve(self, question: str, k: int, ticker: str | None) -> list[SearchHit]:
         client = get_langfuse()
         if client is None:
-            return self._retriever.retrieve(question, k=k, where=where)
+            return self._retriever.retrieve(question, k=k, ticker=ticker)
         with client.start_as_current_observation(
-            name="retrieve", as_type="retriever", input={"query": question, "where": where}
+            name="retrieve", as_type="retriever", input={"query": question, "ticker": ticker}
         ):
-            hits = self._retriever.retrieve(question, k=k, where=where)
+            hits = self._retriever.retrieve(question, k=k, ticker=ticker)
             client.update_current_span(
                 output={"chunk_ids": [h.chunk_id for h in hits], "scores": [h.score for h in hits]}
             )
@@ -67,16 +67,17 @@ class RagPipeline:
         config: RunnableConfig = {"callbacks": [handler]} if handler else {}
         return chain.invoke({"question": question, "context": format_context(hits)}, config=config)
 
-    def answer(self, question: str, k: int = DEFAULT_K, where: str | None = None) -> Answer:
+    def answer(self, question: str, k: int = DEFAULT_K, ticker: str | None = None) -> Answer:
         client = get_langfuse()
         if client is None:
-            hits = self._retrieve(question, k, where)
+            hits = self._retrieve(question, k, ticker)
             return _build_answer(self._generate(question, hits), hits)
 
         with client.start_as_current_observation(
-            name="rag_answer", as_type="span", input={"question": question, "k": k, "where": where}
+            name="rag_answer", as_type="span",
+            input={"question": question, "k": k, "ticker": ticker}
         ):
-            hits = self._retrieve(question, k, where)
+            hits = self._retrieve(question, k, ticker)
             answer = _build_answer(self._generate(question, hits), hits)
             client.update_current_span(
                 output={"answer": answer.text, "n_sources": len(answer.sources)}
@@ -85,7 +86,7 @@ class RagPipeline:
         return answer
 
     def stream(
-        self, question: str, k: int = DEFAULT_K, where: str | None = None
+        self, question: str, k: int = DEFAULT_K, ticker: str | None = None
     ) -> Iterator[dict[str, Any]]:
         """Yield SSE-ready events: one 'sources' event, then 'token' deltas, then 'done'.
 
@@ -100,7 +101,7 @@ class RagPipeline:
             else nullcontext()
         )
         with span_cm:
-            hits = self._retrieve(question, k, where)
+            hits = self._retrieve(question, k, ticker)
             yield {
                 "type": "sources",
                 "sources": [source_citation(i, h) for i, h in enumerate(hits, start=1)],

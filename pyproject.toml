@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "beautifulsoup4>=4.12",
     "bm25s>=0.2",
+    "cohere>=5.11",
     "fastapi>=0.115",
     "httpx>=0.28.1",
     "lancedb>=0.13",
@@ -39,6 +40,12 @@ dev = [
 ]
 ui = [
     "streamlit>=1.37",
+]
+# Local cross-encoder reranker for local dev / Track 2 only. Pulls in torch, so it is intentionally
+# NOT installed by default (keeps the scale-to-zero Lambda image small). Enable with:
+#   uv sync --group rerank-local
+rerank-local = [
+    "sentence-transformers>=3.0",
 ]
 
 # ---------------------------------------------------------------------------
