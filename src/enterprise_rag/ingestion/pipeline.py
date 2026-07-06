@@ -48,8 +48,13 @@ def ingest(tickers: list[str] | None = None) -> IngestReport:
         filing, path = edgar.fetch(ticker)
         sections = parse_sections(path.read_text(encoding="utf-8"))
         chunks = chunk_filing(filing, sections)
-        log.info("  %s FY%s: %d sections -> %d chunks", ticker, filing.fiscal_year,
-                 len(sections), len(chunks))
+        log.info(
+            "  %s FY%s: %d sections -> %d chunks",
+            ticker,
+            filing.fiscal_year,
+            len(sections),
+            len(chunks),
+        )
         # Fail loud, never silently: a filing that parses to nothing means the parser doesn't yet
         # handle this filer's structure. Better to stop than build an index missing a company.
         if not chunks:
@@ -66,7 +71,9 @@ def ingest(tickers: list[str] | None = None) -> IngestReport:
 
     log.info("embedding %d chunks ...", len(all_chunks))
     vectors = embed_texts([c.text for c in all_chunks])
-    records = [{**chunk_to_record(c), "vector": v} for c, v in zip(all_chunks, vectors, strict=True)]
+    records = [
+        {**chunk_to_record(c), "vector": v} for c, v in zip(all_chunks, vectors, strict=True)
+    ]
 
     log.info("writing vector store (%s) ...", settings.store_backend)
     store = get_store(settings)

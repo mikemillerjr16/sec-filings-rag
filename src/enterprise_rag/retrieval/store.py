@@ -32,8 +32,7 @@ class VectorStore(Protocol):
 
     def search(
         self, query_vector: list[float], k: int = 10, where: str | None = None
-    ) -> list[SearchHit]:
-        ...
+    ) -> list[SearchHit]: ...
 
     def count(self) -> int: ...
 

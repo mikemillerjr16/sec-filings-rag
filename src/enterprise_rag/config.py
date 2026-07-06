@@ -13,6 +13,8 @@ from functools import lru_cache
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+PLACEHOLDER_SECRET = "change-me-in-parameter-store"  # the .env.example default => auth off
+
 
 class StoreBackend(StrEnum):
     lancedb = "lancedb"
@@ -29,9 +31,7 @@ class Settings(BaseSettings):
     """Loaded from environment / `.env`. Secrets come from Parameter Store or Secrets Manager
     in AWS; nothing sensitive is ever committed."""
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     # --- LLM / embeddings ---
     openai_api_key: str = Field(default="", description="OpenAI API key")
@@ -64,6 +64,11 @@ class Settings(BaseSettings):
     @property
     def langfuse_enabled(self) -> bool:
         return bool(self.langfuse_public_key and self.langfuse_secret_key)
+
+    @property
+    def auth_enabled(self) -> bool:
+        """True once a real shared secret is set (not empty, not the .env.example placeholder)."""
+        return bool(self.api_shared_secret) and self.api_shared_secret != PLACEHOLDER_SECRET
 
 
 @lru_cache
