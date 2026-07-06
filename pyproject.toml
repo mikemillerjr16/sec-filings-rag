@@ -5,9 +5,17 @@ description = "Enterprise RAG over SEC 10-K filings — cost-optimized, observab
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "beautifulsoup4>=4.12",
+    "bm25s>=0.2",
+    "httpx>=0.28.1",
+    "lancedb>=0.13",
+    "langchain-openai>=0.2",
+    "lxml>=5.2",
+    "numpy>=2.0",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "python-dotenv>=1.0",
+    "tiktoken>=0.7",
 ]
 
 [project.scripts]
