@@ -48,12 +48,13 @@ def require_secret(x_api_key: str | None = Header(default=None)) -> None:
         raise HTTPException(status_code=401, detail="invalid or missing X-API-Key")
 
 
-def _where(ticker: str | None) -> str | None:
+def _validate_ticker(ticker: str | None) -> str | None:
+    """Return the normalized ticker or 400 — reject anything unsafe before any work happens."""
     if ticker is None:
         return None
     if not _TICKER_RE.match(ticker):
         raise HTTPException(status_code=400, detail="invalid ticker")
-    return f"ticker = '{ticker.upper()}'"
+    return ticker.upper()
 
 
 @app.get("/health")
@@ -63,17 +64,17 @@ def health() -> dict[str, str]:
 
 @app.post("/query", dependencies=[Depends(require_secret)])
 def query(req: QueryRequest) -> dict[str, object]:
-    where = _where(req.ticker)  # validate before doing any work
-    answer = get_pipeline().answer(req.question, k=req.k, where=where)
+    ticker = _validate_ticker(req.ticker)  # validate before doing any work
+    answer = get_pipeline().answer(req.question, k=req.k, ticker=ticker)
     return {"answer": answer.text, "sources": answer.sources}
 
 
 @app.post("/query/stream", dependencies=[Depends(require_secret)])
 def query_stream(req: QueryRequest) -> StreamingResponse:
-    where = _where(req.ticker)
+    ticker = _validate_ticker(req.ticker)
 
     def events() -> Iterator[str]:
-        for event in get_pipeline().stream(req.question, k=req.k, where=where):
+        for event in get_pipeline().stream(req.question, k=req.k, ticker=ticker):
             yield f"data: {json.dumps(event)}\n\n"
 
     return StreamingResponse(events(), media_type="text/event-stream")

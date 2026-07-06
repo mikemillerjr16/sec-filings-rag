@@ -44,6 +44,38 @@ _ITEM_HREF_RE = re.compile(r"^item[_\- ]?(\d+[a-c]?)(?![a-z0-9])", re.IGNORECASE
 # horizontal whitespace incl. the non-breaking spaces 10-Ks love, but NOT newlines
 _WS_RE = re.compile(r"[^\S\n]+")
 
+# "Table of Contents" is a running-header hyperlink repeated on nearly every page; it leaks into
+# section text as noise. Tolerant of the letter-spacing spans some filers use ("Conten t s").
+_TOC_NOISE_RE = re.compile(r"\bT\s*a\s*b\s*l\s*e\s+o\s*f\s+C\s*o\s*n\s*t\s*e\s*n\s*t\s*s\b", re.I)
+
+# 10-K item titles are standardized by SEC Regulation S-K, so a canonical lookup gives clean,
+# consistent section titles regardless of how each filer renders its headings.
+STANDARD_ITEM_TITLES: dict[str, str] = {
+    "Item 1": "Business",
+    "Item 1A": "Risk Factors",
+    "Item 1B": "Unresolved Staff Comments",
+    "Item 1C": "Cybersecurity",
+    "Item 2": "Properties",
+    "Item 3": "Legal Proceedings",
+    "Item 4": "Mine Safety Disclosures",
+    "Item 5": "Market for Registrant's Common Equity",
+    "Item 6": "Selected Financial Data",
+    "Item 7": "Management's Discussion and Analysis",
+    "Item 7A": "Quantitative and Qualitative Disclosures About Market Risk",
+    "Item 8": "Financial Statements and Supplementary Data",
+    "Item 9": "Changes in and Disagreements with Accountants",
+    "Item 9A": "Controls and Procedures",
+    "Item 9B": "Other Information",
+    "Item 9C": "Disclosure Regarding Foreign Jurisdictions that Prevent Inspections",
+    "Item 10": "Directors, Executive Officers and Corporate Governance",
+    "Item 11": "Executive Compensation",
+    "Item 12": "Security Ownership of Certain Beneficial Owners and Management",
+    "Item 13": "Certain Relationships and Related Transactions, and Director Independence",
+    "Item 14": "Principal Accountant Fees and Services",
+    "Item 15": "Exhibits and Financial Statement Schedules",
+    "Item 16": "Form 10-K Summary",
+}
+
 
 @dataclass(frozen=True)
 class Section:
@@ -120,15 +152,19 @@ def _text_between(start: Tag, stop: Tag | None) -> str:
             if s:
                 parts.append(s)
     text = " ".join(parts)
+    text = _TOC_NOISE_RE.sub(" ", text)  # drop running-header "Table of Contents" noise
     # collapse the blank lines we injected around tables
     text = re.sub(r"\s*\n\s*", "\n", text)
     return re.sub(r"[ \t]{2,}", " ", text).strip()
 
 
-def _title_for(item: str, text: str) -> str:
-    """Best-effort human title from the first line after the item label."""
-    head = text[:120]
-    head = re.sub(r"^\s*item\s+\d+[a-c]?\.?\s*", "", head, flags=re.IGNORECASE)
+def _title_for(item: str, hint: str, text: str) -> str:
+    """Canonical SEC item title first; then a filer-provided hint; then a body-derived fallback."""
+    if item in STANDARD_ITEM_TITLES:
+        return STANDARD_ITEM_TITLES[item]
+    if hint:
+        return hint[:80]
+    head = re.sub(r"^\s*item\s+\d+[a-c]?\.?\s*", "", text[:120], flags=re.IGNORECASE)
     return head.split("\n")[0].strip(" .")[:80]
 
 
@@ -149,6 +185,6 @@ def parse_sections(html: str) -> list[Section]:
         text = _text_between(start, stop)
         if len(text) < 40:  # skip empty/placeholder anchors
             continue
-        title = title_hint or _title_for(item, text)
+        title = _title_for(item, title_hint, text)
         sections.append(Section(item=item, title=title, text=text))
     return sections

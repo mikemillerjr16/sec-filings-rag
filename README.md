@@ -91,7 +91,7 @@ Built in phases with a clean, reviewable git history (branch + PR per phase):
 - [x] **Phase 0** — Foundations & scaffolding
 - [x] **Phase 1** — Ingestion pipeline (the retrieval-quality battle)
 - [x] **Phase 2** — Baseline RAG + API + UI + Langfuse
-- [ ] **Phase 3** — Advanced retrieval (hybrid + rerank)
+- [x] **Phase 3** — Advanced retrieval (hybrid + rerank)
 - [ ] **Phase 4** — Adversarial evaluation (RAGAS)
 - [ ] **Phase 5** — Track 1 serverless deploy
 - [ ] **Phase 6** — Track 2 production IaC artifact
