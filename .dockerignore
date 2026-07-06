@@ -1,0 +1,31 @@
+# Keep the Docker build context small and reproducible.
+.git
+.gitignore
+.venv
+.venv.nosync
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Local-only artifacts
+.env
+.env.*
+!.env.example
+data/
+data.nosync/
+filings/
+filings.nosync/
+indexes/
+.cache/
+
+# Docs / infra not needed at runtime
+docs/
+infra/
+tests/
+*.md
+!README.md
+.pre-commit-config.yaml
+docker-compose.yml
+.DS_Store

@@ -1,0 +1,47 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Virtual envs (we keep the real venv OUTSIDE iCloud via UV_PROJECT_ENVIRONMENT) ---
+.venv/
+.venv.nosync/
+venv/
+
+# --- Secrets & local env ---
+.env
+.env.*
+!.env.example
+
+# --- Data / indexes / model artifacts (never commit; kept out of iCloud too) ---
+data/
+data.nosync/
+*.lance/
+*.duckdb
+indexes/
+.cache/
+
+# --- SEC filings cache (raw HTML can be large) ---
+filings/
+filings.nosync/
+
+# --- Cloud / IaC local state ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.aws-sam/
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- iCloud sync cruft ---
+.icloud
+*.icloud
