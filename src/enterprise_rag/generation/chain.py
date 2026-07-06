@@ -6,6 +6,8 @@ with a retriever span (which chunks) and a generation span (tokens, cost, latenc
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import Any
 
@@ -63,9 +65,7 @@ class RagPipeline:
         chain = self._prompt | self._llm | StrOutputParser()
         handler = get_handler()
         config: RunnableConfig = {"callbacks": [handler]} if handler else {}
-        return chain.invoke(
-            {"question": question, "context": format_context(hits)}, config=config
-        )
+        return chain.invoke({"question": question, "context": format_context(hits)}, config=config)
 
     def answer(self, question: str, k: int = DEFAULT_K, where: str | None = None) -> Answer:
         client = get_langfuse()
@@ -83,6 +83,42 @@ class RagPipeline:
             )
         flush()  # ensure the trace is sent (matters on Lambda)
         return answer
+
+    def stream(
+        self, question: str, k: int = DEFAULT_K, where: str | None = None
+    ) -> Iterator[dict[str, Any]]:
+        """Yield SSE-ready events: one 'sources' event, then 'token' deltas, then 'done'.
+
+        This is the Track-2 (ECS) true-streaming path; Track-1 (Lambda) uses buffered `answer()`.
+        """
+        client = get_langfuse()
+        span_cm = (
+            client.start_as_current_observation(
+                name="rag_answer_stream", as_type="span", input={"question": question, "k": k}
+            )
+            if client is not None
+            else nullcontext()
+        )
+        with span_cm:
+            hits = self._retrieve(question, k, where)
+            yield {
+                "type": "sources",
+                "sources": [source_citation(i, h) for i, h in enumerate(hits, start=1)],
+            }
+            handler = get_handler()
+            config: RunnableConfig = {"callbacks": [handler]} if handler else {}
+            parts: list[str] = []
+            for chunk in (self._prompt | self._llm).stream(
+                {"question": question, "context": format_context(hits)}, config=config
+            ):
+                token = str(chunk.content or "")
+                if token:
+                    parts.append(token)
+                    yield {"type": "token", "text": token}
+            if client is not None:
+                client.update_current_span(output={"answer": "".join(parts)})
+        flush()
+        yield {"type": "done"}
 
 
 def _build_answer(text: str, hits: list[SearchHit]) -> Answer:

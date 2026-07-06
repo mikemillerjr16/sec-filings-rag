@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "beautifulsoup4>=4.12",
     "bm25s>=0.2",
+    "fastapi>=0.115",
     "httpx>=0.28.1",
     "lancedb>=0.13",
     "langchain>=0.3",
@@ -18,6 +19,7 @@ dependencies = [
     "pydantic-settings>=2.3",
     "python-dotenv>=1.0",
     "tiktoken>=0.7",
+    "uvicorn[standard]>=0.30",
 ]
 
 [project.scripts]
@@ -35,6 +37,9 @@ dev = [
     "mypy>=1.10",
     "pre-commit>=3.7",
 ]
+ui = [
+    "streamlit>=1.37",
+]
 
 # ---------------------------------------------------------------------------
 # Tooling
@@ -50,6 +55,10 @@ ignore = ["E501"]  # line length handled by formatter
 
 [tool.ruff.lint.isort]
 known-first-party = ["enterprise_rag"]
+
+[tool.ruff.lint.per-file-ignores]
+# The Streamlit UI holds user-facing display copy where typographic en/em dashes are intentional.
+"ui/*" = ["RUF001"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
